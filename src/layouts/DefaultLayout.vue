@@ -40,7 +40,9 @@ function isActive(path) {
   <div class="layout" :class="{ 'sidebar-collapsed': !sidebarOpen }">
     <aside class="sidebar">
       <div class="sidebar-header">
-        <i v-if="sidebarOpen" class="bi bi-shop logo-icon"></i>
+        <svg v-if="sidebarOpen" class="logo-icon" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M1 1H3V15H1V1Z"/><path d="M5 13H15V9H5V13Z"/><path d="M11 7H5V3H11V7Z"/>
+        </svg>
         <h2 v-if="sidebarOpen" class="logo">POS Admin</h2>
         <button class="toggle-btn" @click="sidebarOpen = !sidebarOpen">
           <i class="bi" :class="sidebarOpen ? 'bi-chevron-left' : 'bi-chevron-right'"></i>
@@ -123,7 +125,9 @@ function isActive(path) {
   border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 .logo-icon {
-  font-size: 24px;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
   color: #e94560;
 }
 .logo {

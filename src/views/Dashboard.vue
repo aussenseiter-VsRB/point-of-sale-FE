@@ -5,11 +5,13 @@ import { useAuthStore } from '@/stores/auth'
 import { getProduk } from '@/api/produk'
 import { getKasir } from '@/api/kasir'
 import { getTransaksi } from '@/api/transaksi'
+import { getPasswordHistory } from '@/api/user'
 
 const auth = useAuthStore()
 const router = useRouter()
 const stats = ref({ produk: 0, kasir: 0, transaksi: 0, totalOmset: 0 })
 const loading = ref(true)
+const recentPasswordChanges = ref([])
 
 onMounted(async () => {
   try {
@@ -24,10 +26,21 @@ onMounted(async () => {
     stats.value.totalOmset = transaksiRes.data.reduce((sum, t) => sum + Number(t.total_harga || 0), 0)
   } catch {
     // silent
+  }
+  try {
+    const { data } = await getPasswordHistory()
+    recentPasswordChanges.value = data.slice(0, 5)
+  } catch {
+    // silent
   } finally {
     loading.value = false
   }
 })
+
+function formatDate(d) {
+  if (!d) return '-'
+  return new Date(d).toLocaleString('id-ID')
+}
 </script>
 
 <template>
@@ -71,6 +84,24 @@ onMounted(async () => {
         <button class="action-btn" @click="router.push('/transaksi/create')"><i class="bi bi-cart-plus"></i> New Transaction</button>
         <button class="action-btn" @click="router.push('/produk/create')"><i class="bi bi-plus-lg"></i> Add Product</button>
         <button class="action-btn" @click="router.push('/stok-masuk/create')"><i class="bi bi-box-arrow-in-down"></i> Restock</button>
+      </div>
+    </div>
+
+    <div v-if="recentPasswordChanges.length > 0" class="section">
+      <div class="section-header">
+        <h2>Perubahan Password Terbaru</h2>
+        <router-link to="/password-history" class="see-all">Lihat semua</router-link>
+      </div>
+      <div class="password-list">
+        <div v-for="h in recentPasswordChanges" :key="h.id" class="password-item">
+          <i class="bi bi-key"></i>
+          <div>
+            <strong>{{ h.user_username }}</strong>
+            <span v-if="h.user_id === h.changed_by"> mengubah password sendiri</span>
+            <span v-else>diubah oleh <strong>{{ h.changed_by_username }}</strong></span>
+          </div>
+          <small>{{ formatDate(h.created_at) }}</small>
+        </div>
       </div>
     </div>
   </div>
@@ -150,4 +181,22 @@ onMounted(async () => {
   border-color: #e94560;
   background: #fff5f5;
 }
+.section { margin-top: 32px; }
+.section-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+}
+.section-header h2 { font-size: 18px; margin: 0; }
+.see-all { font-size: 13px; color: #e94560; text-decoration: none; font-weight: 600; }
+.see-all:hover { text-decoration: underline; }
+.password-list {
+  background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.password-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 20px; border-bottom: 1px solid #f0f0f0;
+}
+.password-item:last-child { border-bottom: none; }
+.password-item i { font-size: 18px; color: #e94560; }
+.password-item div { flex: 1; font-size: 14px; }
+.password-item small { color: #888; font-size: 12px; white-space: nowrap; }
 </style>

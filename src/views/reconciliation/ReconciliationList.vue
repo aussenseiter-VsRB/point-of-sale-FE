@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { getAllReconciliations } from '@/api/reconciliation'
+import { getKasirByUser } from '@/api/kasir'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -11,11 +12,18 @@ const loading = ref(true)
 const error = ref('')
 
 onMounted(async () => {
-  if (!auth.isAdmin) {
-    loading.value = false
-    return
-  }
   try {
+    if (!auth.isAdmin && !auth.kasir?.id && auth.user?.id) {
+      try {
+        const { data } = await getKasirByUser(auth.user.id)
+        if (data?.id) {
+          auth.kasir = data
+          localStorage.setItem('kasir', JSON.stringify(data))
+        }
+      } catch {
+        // no kasir record
+      }
+    }
     const { data } = await getAllReconciliations()
     reconciliations.value = data
   } catch {
@@ -36,18 +44,18 @@ function formatDate(d) {
     <div class="page-header">
       <div>
         <h1>Cash Reconciliation</h1>
-        <p>{{ reconciliations.length }} reconciliations</p>
+        <p>{{ reconciliations.length }} records</p>
       </div>
       <button class="btn-primary" @click="router.push('/reconciliation/create')">
         <i class="bi bi-plus-lg"></i> New Reconciliation
       </button>
     </div>
     <div v-if="loading" class="loading">Loading...</div>
-    <div v-else-if="!auth.isAdmin" class="info-card">
-      <i class="bi bi-check-circle"></i>
-      <span>Reconciliation submitted successfully! <router-link to="/reconciliation/create">Submit another?</router-link></span>
+    <div v-else-if="error" class="info-card error-card">
+      <i class="bi bi-exclamation-circle"></i>
+      <span>{{ error }}</span>
     </div>
-    <div v-else-if="reconciliations.length === 0" class="empty">No reconciliations</div>
+    <div v-else-if="reconciliations.length === 0" class="empty">No reconciliations yet</div>
     <div v-else class="table-wrapper">
       <table>
         <thead>
@@ -86,10 +94,10 @@ function formatDate(d) {
 .loading, .empty { text-align: center; padding: 40px; color: #888; }
 .info-card {
   display: flex; align-items: center; gap: 10px;
-  background: #e8f5e9; color: #2e7d32;
   padding: 16px 20px; border-radius: 10px; font-size: 15px;
 }
 .info-card i { font-size: 22px; }
+.error-card { background: #fce4ec; color: #c62828; }
 .table-wrapper {
   background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }

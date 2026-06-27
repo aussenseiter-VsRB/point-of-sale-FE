@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import ShiftBanner from '@/components/ShiftBanner.vue'
+import PasswordChangeModal from '@/components/PasswordChangeModal.vue'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -23,6 +24,7 @@ const adminNav = [
   { name: 'Diskon', path: '/transaksi/discounted', icon: 'bi-tag' },
   { name: 'Void Log', path: '/void-log', icon: 'bi-journal-text' },
   { name: 'Reports', path: '/reports', icon: 'bi-bar-chart' },
+  { name: 'Password History', path: '/password-history', icon: 'bi-key' },
 ]
 
 const kasirNav = [
@@ -30,13 +32,13 @@ const kasirNav = [
   { name: 'POS', path: '/transaksi/create', icon: 'bi-cart-plus', highlight: true },
   { name: 'Transaksi', path: '/transaksi', icon: 'bi-receipt' },
   { name: 'Produk', path: '/produk', icon: 'bi-box-seam' },
-  { name: 'Stok Masuk', path: '/stok-masuk', icon: 'bi-box-arrow-in-down' },
   { name: 'Shift', path: '/shift', icon: 'bi-clock-history' },
   { name: 'Reconciliation', path: '/reconciliation', icon: 'bi-cash-coin' },
 ]
 
 const navItems = computed(() => (isAdmin.value ? adminNav : kasirNav))
 const sidebarTheme = computed(() => isAdmin.value ? 'admin' : 'kasir')
+const showChangePassword = ref(false)
 
 function handleLogout() {
   auth.logout()
@@ -53,7 +55,9 @@ function isActive(path, exact) {
   <div class="layout" :class="[{ 'sidebar-collapsed': !sidebarOpen }, `theme-${sidebarTheme}`]">
     <aside class="sidebar">
       <div class="sidebar-header">
-        <i class="bi bi-shop logo-icon"></i>
+        <svg class="logo-icon" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M1 1H3V15H1V1Z"/><path d="M5 13H15V9H5V13Z"/><path d="M11 7H5V3H11V7Z"/>
+        </svg>
         <h2 v-if="sidebarOpen" class="logo">POS {{ isAdmin ? 'Admin' : 'Kasir' }}</h2>
         <button class="toggle-btn" @click="sidebarOpen = !sidebarOpen">
           <i class="bi" :class="sidebarOpen ? 'bi-chevron-left' : 'bi-chevron-right'"></i>
@@ -82,11 +86,16 @@ function isActive(path, exact) {
             <small>{{ isAdmin ? 'Admin' : 'Kasir' }}</small>
           </div>
         </div>
+        <button class="logout-btn" @click="showChangePassword = true">
+          <i class="bi bi-key"></i>
+          <span v-if="sidebarOpen"> Change Password</span>
+        </button>
         <button class="logout-btn" @click="handleLogout">
           <i class="bi bi-box-arrow-right"></i>
           <span v-if="sidebarOpen"> Logout</span>
         </button>
       </div>
+      <PasswordChangeModal v-if="showChangePassword" @close="showChangePassword = false" @changed="showChangePassword = false" />
     </aside>
     <main class="main-content">
       <ShiftBanner />
@@ -129,7 +138,9 @@ function isActive(path, exact) {
   border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 .logo-icon {
-  font-size: 24px;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
 }
 .theme-admin .logo-icon { color: #e94560; }
 .theme-kasir .logo-icon { color: #2ecc71; }

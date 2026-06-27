@@ -2,12 +2,15 @@
 import { ref, onMounted } from 'vue'
 import { register } from '@/api/auth'
 import { getUsers, deleteUser } from '@/api/user'
+import PasswordChangeModal from '@/components/PasswordChangeModal.vue'
 
 const userList = ref([])
 const loading = ref(true)
 const showRegister = ref(false)
 const regForm = ref({ username: '', password: '', role: 'user' })
 const regError = ref('')
+const changePassTarget = ref(null)
+const regShowPass = ref(false)
 
 async function loadData() {
   loading.value = true
@@ -44,6 +47,10 @@ async function handleRegister() {
     regError.value = err.response?.data?.message || 'Gagal mendaftarkan user'
   }
 }
+
+function openChangePassword(user) {
+  changePassTarget.value = user
+}
 </script>
 
 <template>
@@ -67,7 +74,12 @@ async function handleRegister() {
         </div>
         <div class="form-group">
           <label>Password</label>
-          <input v-model="regForm.password" type="password" required placeholder="Password" />
+          <div class="input-wrap">
+            <input v-model="regForm.password" :type="regShowPass ? 'text' : 'password'" required placeholder="Password" />
+            <button type="button" class="toggle-pass" @click="regShowPass = !regShowPass" tabindex="-1">
+              <i :class="regShowPass ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+            </button>
+          </div>
         </div>
         <div class="form-group">
           <label>Role</label>
@@ -96,12 +108,20 @@ async function handleRegister() {
             <td>{{ u.username }}</td>
             <td><span :class="['badge', u.role === 'admin' ? 'badge-admin' : 'badge-user']">{{ u.role }}</span></td>
             <td>
+              <button class="btn-sm btn-key" @click="openChangePassword(u)"><i class="bi bi-key"></i> Password</button>
               <button class="btn-sm btn-danger" @click="handleDelete(u.id)"><i class="bi bi-trash"></i> Hapus</button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
+
+    <PasswordChangeModal
+      v-if="changePassTarget"
+      :target-user="changePassTarget"
+      @close="changePassTarget = null"
+      @changed="changePassTarget = null; loadData()"
+    />
   </div>
 </template>
 
@@ -124,6 +144,14 @@ async function handleRegister() {
   border-radius: 8px; font-size: 14px; box-sizing: border-box;
 }
 .form-group input:focus, .form-group select:focus { outline: none; border-color: #e94560; }
+.input-wrap { position: relative; }
+.input-wrap input { padding-right: 40px; }
+.toggle-pass {
+  position: absolute; right: 2px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; color: #888; cursor: pointer;
+  padding: 8px 10px; font-size: 16px; line-height: 1;
+}
+.toggle-pass:hover { color: #333; }
 .error { color: #e94560; margin-bottom: 16px; }
 .table-wrapper {
   background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
@@ -142,4 +170,6 @@ td { font-size: 14px; }
 .btn-sm:hover { background: #f5f5f5; }
 .btn-danger { color: #c62828; border-color: #ffcdd2; }
 .btn-danger:hover { background: #ffebee; }
+.btn-key { color: #1565c0; border-color: #bbdefb; }
+.btn-key:hover { background: #e3f2fd; }
 </style>

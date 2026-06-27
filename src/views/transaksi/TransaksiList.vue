@@ -61,7 +61,7 @@ function formatDate(d) {
       <table>
         <thead>
           <tr>
-            <th>ID</th>
+            <th>Invoice</th>
             <th>Kasir</th>
             <th>Total</th>
             <th>Diskon</th>
@@ -71,8 +71,8 @@ function formatDate(d) {
         </thead>
         <tbody>
           <tr v-for="t in filtered" :key="t.id">
-            <td><code>{{ t.id?.substring(0, 8) }}...</code></td>
-            <td>{{ t.kasir_username || 'N/A' }}</td>
+            <td><code>{{ t.invoice_number || t.id?.substring(0, 8) }}</code></td>
+            <td>{{ t.nama_kasir || t.kasir_username || 'N/A' }}</td>
             <td>Rp {{ Number(t.total_harga).toLocaleString('id-ID') }}</td>
             <td>
               <span v-if="Number(t.discount_amount) > 0" class="badge badge-discount">
@@ -83,6 +83,7 @@ function formatDate(d) {
             <td>{{ formatDate(t.created_at) }}</td>
             <td>
               <button class="btn-sm" @click="router.push(`/transaksi/${t.id}`)"><i class="bi bi-eye"></i> Detail</button>
+              <button class="btn-sm btn-invoice" @click="router.push(`/transaksi/${t.id}/invoice`)"><i class="bi bi-receipt"></i> Invoice</button>
             </td>
           </tr>
         </tbody>
@@ -122,6 +123,8 @@ code { background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-size: 12p
   border-radius: 6px; cursor: pointer; font-size: 12px;
 }
 .btn-sm:hover { background: #f5f5f5; }
+.btn-invoice { margin-left: 4px; color: #1a1a2e; border-color: #1a1a2e; }
+.btn-invoice:hover { background: #1a1a2e; color: #fff; }
 .btn-primary {
   padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none;
   background: #e94560; color: #fff;

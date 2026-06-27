@@ -53,7 +53,8 @@ function formatDate(d) {
         <div class="detail-card">
           <h3>Info</h3>
           <div class="detail-row"><span>ID</span><code>{{ transaksi.id }}</code></div>
-          <div class="detail-row"><span>Kasir</span><span>{{ transaksi.kasir_username || 'N/A' }}</span></div>
+          <div class="detail-row"><span>Invoice</span><span class="invoice-num">{{ transaksi.invoice_number || '-' }}</span></div>
+          <div class="detail-row"><span>Kasir</span><span>{{ transaksi.nama_kasir || transaksi.kasir_username || 'N/A' }}</span></div>
           <div class="detail-row"><span>Date</span><span>{{ formatDate(transaksi.created_at) }}</span></div>
           <div class="detail-row" v-if="Number(transaksi.discount_amount) > 0">
             <span>Discount</span><span class="discount-amount">-Rp {{ Number(transaksi.discount_amount).toLocaleString('id-ID') }}</span>
@@ -95,6 +96,7 @@ function formatDate(d) {
         </div>
       </div>
       <div class="actions">
+        <button class="btn-primary" @click="router.push(`/transaksi/${transaksi.id}/invoice`)"><i class="bi bi-receipt"></i> Invoice / Faktur</button>
         <button class="btn-danger" @click="showVoid = !showVoid"><i class="bi bi-x-octagon"></i> Void Transaction</button>
         <div v-if="showVoid" class="void-form">
           <textarea v-model="voidReason" placeholder="Alasan void..." rows="2"></textarea>
@@ -131,6 +133,7 @@ function formatDate(d) {
 .detail-row code { font-size: 11px; background: #f0f0f0; padding: 2px 6px; border-radius: 4px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
 .total-row { font-size: 18px; font-weight: 700; color: #1a1a2e; }
 .discount-amount { color: #f57f17; font-weight: 600; }
+.invoice-num { font-weight: 700; color: #1a1a2e; }
 .items-table { width: 100%; border-collapse: collapse; }
 .items-table th, .items-table td {
   text-align: left; padding: 10px 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px;
@@ -151,6 +154,10 @@ function formatDate(d) {
 .btn-danger:disabled { opacity: 0.6; cursor: not-allowed; }
 .btn-secondary {
   padding: 10px 20px; background: #f0f0f0; color: #333; border: none;
+  border-radius: 8px; cursor: pointer; font-weight: 600;
+}
+.btn-primary {
+  padding: 10px 20px; background: #e94560; color: #fff; border: none;
   border-radius: 8px; cursor: pointer; font-weight: 600;
 }
 .void-form { margin-top: 12px; }

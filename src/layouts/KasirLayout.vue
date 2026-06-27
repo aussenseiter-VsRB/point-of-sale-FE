@@ -9,13 +9,12 @@ const route = useRoute()
 const sidebarOpen = ref(true)
 
 const navItems = [
-  { name: 'Dashboard', path: '/kasir', icon: 'bi-speedometer2' },
-  { name: 'POS', path: '/kasir/transaksi/create', icon: 'bi-cart-plus', highlight: true },
-  { name: 'Transaksi', path: '/kasir/transaksi', icon: 'bi-receipt' },
-  { name: 'Produk', path: '/kasir/produk', icon: 'bi-box-seam' },
-  { name: 'Stok Masuk', path: '/kasir/stok-masuk', icon: 'bi-box-arrow-in-down' },
-  { name: 'Shift', path: '/kasir/shift', icon: 'bi-clock-history' },
-  { name: 'Reconciliation', path: '/kasir/reconciliation', icon: 'bi-cash-coin' },
+  { name: 'Dashboard', path: '/', icon: 'bi-speedometer2' },
+  { name: 'POS', path: '/transaksi/create', icon: 'bi-cart-plus', highlight: true },
+  { name: 'Transaksi', path: '/transaksi', icon: 'bi-receipt' },
+  { name: 'Produk', path: '/produk', icon: 'bi-box-seam' },
+  { name: 'Shift', path: '/shift', icon: 'bi-clock-history' },
+  { name: 'Reconciliation', path: '/reconciliation', icon: 'bi-cash-coin' },
 ]
 
 function handleLogout() {
@@ -34,7 +33,9 @@ function isActive(path, exact) {
   <div class="layout" :class="{ 'sidebar-collapsed': !sidebarOpen }">
     <aside class="sidebar">
       <div class="sidebar-header">
-        <i v-if="sidebarOpen" class="bi bi-shop logo-icon"></i>
+        <svg v-if="sidebarOpen" class="logo-icon" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M1 1H3V15H1V1Z"/><path d="M5 13H15V9H5V13Z"/><path d="M11 7H5V3H11V7Z"/>
+        </svg>
         <h2 v-if="sidebarOpen" class="logo">POS Kasir</h2>
         <button class="toggle-btn" @click="sidebarOpen = !sidebarOpen">
           <i class="bi" :class="sidebarOpen ? 'bi-chevron-left' : 'bi-chevron-right'"></i>
@@ -101,7 +102,9 @@ function isActive(path, exact) {
   border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 .logo-icon {
-  font-size: 24px;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
   color: #2ecc71;
 }
 .logo {
