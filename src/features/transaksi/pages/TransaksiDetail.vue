@@ -17,7 +17,7 @@ onMounted(async () => {
     const { data } = await getTransaksiById(route.params.id)
     transaksi.value = data
   } catch {
-    alert('Failed to load transaction')
+    alert('Gagal memuat transaksi')
     router.push('/transaksi')
   } finally {
     loading.value = false
@@ -26,12 +26,12 @@ onMounted(async () => {
 
 async function handleVoid() {
   if (!voidReason.value.trim()) return
-  if (!confirm('Void this transaction?')) return
+  if (!confirm('Void transaksi ini?')) return
   try {
     await voidTransaksi(route.params.id, voidReason.value)
     router.push('/transaksi')
   } catch (err) {
-    alert(err.response?.data?.message || 'Failed to void transaction')
+    alert(err.response?.data?.message || 'Gagal void transaksi')
   }
 }
 
@@ -43,34 +43,34 @@ function formatDate(d) {
 
 <template>
   <div class="page">
-    <div v-if="loading" class="loading">Loading...</div>
+    <div v-if="loading" class="loading">Memuat...</div>
     <template v-else-if="transaksi">
       <div class="page-header">
-        <h1>Transaction Detail</h1>
-        <button class="btn-secondary" @click="router.push('/transaksi')"><i class="bi bi-arrow-left"></i> Back</button>
+        <h1>Detail Transaksi</h1>
+        <button class="btn-secondary" @click="router.push('/transaksi')"><i class="bi bi-arrow-left"></i> Kembali</button>
       </div>
       <div class="detail-grid">
         <div class="detail-card">
-          <h3>Info</h3>
+          <h3>Informasi</h3>
           <div class="detail-row"><span>ID</span><code>{{ transaksi.id }}</code></div>
           <div class="detail-row"><span>Invoice</span><span class="invoice-num">{{ transaksi.invoice_number || '-' }}</span></div>
           <div class="detail-row"><span>Kasir</span><span>{{ transaksi.nama_kasir || transaksi.kasir_username || 'N/A' }}</span></div>
-          <div class="detail-row"><span>Date</span><span>{{ formatDate(transaksi.created_at) }}</span></div>
+          <div class="detail-row"><span>Tanggal</span><span>{{ formatDate(transaksi.created_at) }}</span></div>
           <div class="detail-row" v-if="Number(transaksi.discount_amount) > 0">
-            <span>Discount</span><span class="discount-amount">-Rp {{ Number(transaksi.discount_amount).toLocaleString('id-ID') }}</span>
+            <span>Diskon</span><span class="discount-amount">-Rp {{ Number(transaksi.discount_amount).toLocaleString('id-ID') }}</span>
           </div>
           <div class="detail-row" v-if="transaksi.discount_reason">
-            <span>Reason</span><span>{{ transaksi.discount_reason }}</span>
+            <span>Alasan</span><span>{{ transaksi.discount_reason }}</span>
           </div>
           <div class="detail-row total-row">
             <span>Total</span><span>Rp {{ Number(transaksi.total_harga).toLocaleString('id-ID') }}</span>
           </div>
         </div>
         <div class="detail-card">
-          <h3>Items</h3>
+          <h3>Item</h3>
           <table class="items-table">
             <thead>
-              <tr><th>Product</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr>
+              <tr><th>Produk</th><th>Qty</th><th>Harga</th><th>Subtotal</th></tr>
             </thead>
             <tbody>
               <tr v-for="item in transaksi.items" :key="item.id">
@@ -96,12 +96,12 @@ function formatDate(d) {
         </div>
       </div>
       <div class="actions">
-        <button class="btn-primary" @click="router.push(`/transaksi/${transaksi.id}/invoice`)"><i class="bi bi-receipt"></i> Invoice / Faktur</button>
-        <button class="btn-danger" @click="showVoid = !showVoid"><i class="bi bi-x-octagon"></i> Void Transaction</button>
+        <button class="btn-primary" @click="router.push(`/transaksi/${transaksi.id}/invoice`)"><i class="bi bi-receipt"></i> Invoice</button>
+        <button class="btn-danger" @click="showVoid = !showVoid"><i class="bi bi-x-octagon"></i> Void Transaksi</button>
         <div v-if="showVoid" class="void-form">
           <textarea v-model="voidReason" placeholder="Alasan void..." rows="2"></textarea>
           <button class="btn-danger" :disabled="!voidReason.trim()" @click="handleVoid">
-            <i class="bi bi-check-lg"></i> Confirm Void
+            <i class="bi bi-check-lg"></i> Konfirmasi Void
           </button>
         </div>
       </div>

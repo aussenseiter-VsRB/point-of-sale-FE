@@ -26,6 +26,7 @@ const routes = [
       { path: 'transaksi/:id', name: 'TransaksiDetail', component: () => import('@/features/transaksi/pages/TransaksiDetail.vue'), props: true },
       { path: 'transaksi/:id/invoice', name: 'TransaksiInvoice', component: () => import('@/features/transaksi/pages/TransaksiInvoice.vue') },
       { path: 'transaksi/discounted', name: 'TransaksiDiscounted', component: () => import('@/features/transaksi/pages/DiscountedList.vue'), meta: { requiresAdmin: true } },
+      { path: 'diskon', name: 'Diskon', component: () => import('@/features/diskon/pages/DiskonProduk.vue'), meta: { requiresAdmin: true } },
       { path: 'coupons', name: 'Coupons', component: () => import('@/features/coupon/pages/CouponList.vue'), meta: { requiresAdmin: true } },
       { path: 'stok-masuk', name: 'StokMasuk', component: () => import('@/features/stokMasuk/pages/StokMasukList.vue'), meta: { requiresAdmin: true } },
       { path: 'stok-masuk/create', name: 'StokMasukCreate', component: () => import('@/features/stokMasuk/pages/StokMasukForm.vue'), meta: { requiresAdmin: true } },

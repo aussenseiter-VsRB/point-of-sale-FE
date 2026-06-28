@@ -47,7 +47,7 @@ async function handleOpenShift() {
     <h1>Dashboard</h1>
     <p class="greeting">Selamat datang, <strong>{{ auth.username }}</strong>!</p>
 
-    <div v-if="loading" class="loading">Loading...</div>
+    <div v-if="loading" class="loading">Memuat...</div>
     <template v-else>
       <div class="shift-card" :class="activeShift ? 'shift-open' : 'shift-closed'">
         <div class="shift-icon">
@@ -76,6 +76,13 @@ async function handleOpenShift() {
           <div class="stat-body">
             <span class="stat-value">Rp {{ todayTotal.toLocaleString('id-ID') }}</span>
             <span class="stat-label">Penjualan Hari Ini</span>
+          </div>
+        </div>
+        <div v-if="auth.kasir?.modal > 0" class="stat-card modal-card">
+          <div class="stat-icon"><i class="bi bi-piggy-bank"></i></div>
+          <div class="stat-body">
+            <span class="stat-value">Rp {{ Number(auth.kasir.modal).toLocaleString('id-ID') }}</span>
+            <span class="stat-label">Modal Awal</span>
           </div>
         </div>
       </div>

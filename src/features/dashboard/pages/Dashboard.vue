@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/shared/stores/auth'
 import { getProduk } from '@/features/produk/api'
-import { getKasir } from '@/features/kasir/api'
+import { getKasir, updateKasir } from '@/features/kasir/api'
 import { getTransaksi } from '@/features/transaksi/api'
 import { getPasswordHistory } from '@/features/user/api'
 
@@ -12,6 +12,32 @@ const router = useRouter()
 const stats = ref({ produk: 0, kasir: 0, transaksi: 0, totalOmset: 0 })
 const loading = ref(true)
 const recentPasswordChanges = ref([])
+const kasirList = ref([])
+
+async function loadKasir() {
+  try {
+    const { data } = await getKasir()
+    kasirList.value = data
+  } catch {
+    // silent
+  }
+}
+
+async function giveModal(k) {
+  const amount = prompt(`Masukkan modal untuk ${k.username}:`, '')
+  if (amount === null) return
+  const num = Number(amount)
+  if (isNaN(num) || num < 0) {
+    alert('Jumlah tidak valid')
+    return
+  }
+  try {
+    await updateKasir(k.id, { modal: num })
+    await loadKasir()
+  } catch (err) {
+    alert(err.response?.data?.message || 'Gagal memberikan modal')
+  }
+}
 
 onMounted(async () => {
   try {
@@ -21,6 +47,7 @@ onMounted(async () => {
       getTransaksi(),
     ])
     stats.value.produk = produkRes.data.length
+    kasirList.value = kasirRes.data
     stats.value.kasir = kasirRes.data.length
     stats.value.transaksi = transaksiRes.data.length
     stats.value.totalOmset = transaksiRes.data.reduce((sum, t) => sum + Number(t.total_harga || 0), 0)
@@ -47,7 +74,7 @@ function formatDate(d) {
   <div class="dashboard">
     <h1>Dashboard</h1>
     <p class="greeting">Selamat datang, <strong>{{ auth.username }}</strong>!</p>
-    <div v-if="loading" class="loading">Loading...</div>
+    <div v-if="loading" class="loading">Memuat...</div>
     <div v-else class="stats-grid">
       <div class="stat-card" @click="router.push('/produk')">
         <div class="stat-icon"><i class="bi bi-box-seam"></i></div>
@@ -79,11 +106,32 @@ function formatDate(d) {
       </div>
     </div>
     <div class="quick-actions">
-      <h2>Quick Actions</h2>
+      <h2>Aksi Cepat</h2>
       <div class="actions-grid">
-        <button class="action-btn" @click="router.push('/transaksi/create')"><i class="bi bi-cart-plus"></i> New Transaction</button>
-        <button class="action-btn" @click="router.push('/produk/create')"><i class="bi bi-plus-lg"></i> Add Product</button>
-        <button class="action-btn" @click="router.push('/stok-masuk/create')"><i class="bi bi-box-arrow-in-down"></i> Restock</button>
+        <button class="action-btn" @click="router.push('/transaksi/create')"><i class="bi bi-cart-plus"></i> Transaksi Baru</button>
+        <button class="action-btn" @click="router.push('/produk/create')"><i class="bi bi-plus-lg"></i> Tambah Produk</button>
+        <button class="action-btn" @click="router.push('/stok-masuk/create')"><i class="bi bi-box-arrow-in-down"></i> Restok</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h2>Modal Kasir</h2>
+      </div>
+      <div class="modal-list">
+        <div v-for="k in kasirList" :key="k.id" class="modal-item" :class="{ 'modal-empty': Number(k.modal) === 0 }">
+          <div class="mi-info">
+            <i class="bi bi-person-badge"></i>
+            <strong>{{ k.username }}</strong>
+          </div>
+          <div class="mi-modal">
+            <span v-if="Number(k.modal) > 0">Rp {{ Number(k.modal).toLocaleString('id-ID') }}</span>
+            <span v-else class="text-danger">Belum ada modal</span>
+          </div>
+          <button class="btn-give-modal" @click="giveModal(k)">
+            <i class="bi bi-cash-stack"></i> Beri Modal
+          </button>
+        </div>
       </div>
     </div>
 
@@ -232,4 +280,58 @@ function formatDate(d) {
   font-size: 12px;
   white-space: nowrap;
 }
+
+.modal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.modal-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  background: #fff;
+  border-radius: 10px;
+  border-left: 4px solid #e0e0e0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.modal-item.modal-empty {
+  border-left-color: #f57f17;
+  background: #fff8e1;
+}
+.mi-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 140px;
+}
+.mi-info i {
+  font-size: 18px;
+  color: #e94560;
+}
+.mi-modal {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+.text-danger {
+  color: #c62828;
+}
+.btn-give-modal {
+  padding: 8px 16px;
+  background: #2e7d32;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.btn-give-modal:hover {
+  background: #1b5e20;
+}
+
 </style>

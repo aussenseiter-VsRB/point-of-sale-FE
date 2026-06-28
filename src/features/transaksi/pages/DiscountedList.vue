@@ -42,14 +42,18 @@ function formatDate(d) {
 
 <template>
   <div class="page">
-    <h1>Discounted Transactions</h1>
-    <p class="subtitle">All transactions with discounts applied</p>
+    <div class="page-header">
+      <div>
+        <h1>Transaksi Diskon</h1>
+        <p>{{ filtered.length }} transaksi</p>
+      </div>
+    </div>
     <div class="search-bar">
       <i class="bi bi-search search-icon"></i>
-      <input v-model="search" placeholder="Search by ID, kasir, or reason..." />
+      <input v-model="search" placeholder="Cari berdasarkan ID, kasir, atau alasan..." />
     </div>
-    <div v-if="loading" class="loading">Loading...</div>
-    <div v-else-if="filtered.length === 0" class="empty">No discounted transactions found</div>
+    <div v-if="loading" class="loading">Memuat...</div>
+    <div v-else-if="filtered.length === 0" class="empty">Tidak ada transaksi diskon</div>
     <div v-else class="table-wrapper">
       <table>
         <thead>
@@ -57,10 +61,10 @@ function formatDate(d) {
             <th>ID</th>
             <th>Kasir</th>
             <th>Total</th>
-            <th>Discount</th>
-            <th>Reason</th>
-            <th>Approved By</th>
-            <th>Date</th>
+            <th>Diskon</th>
+            <th>Alasan</th>
+            <th>Disetujui Oleh</th>
+            <th>Tanggal</th>
           </tr>
         </thead>
         <tbody>
@@ -80,12 +84,21 @@ function formatDate(d) {
 </template>
 
 <style scoped>
-h1 {
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.page-header h1 {
   margin: 0;
 }
-.subtitle {
+.page-header p {
   color: #888;
-  margin-bottom: 20px;
+  font-size: 14px;
+  margin: 0;
 }
 .search-bar {
   position: relative;

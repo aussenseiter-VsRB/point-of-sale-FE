@@ -15,7 +15,9 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401 && localStorage.getItem('token')) {
+    const skipPaths = ['/users/password', '/users/username']
+    const isSkip = err.config && skipPaths.some(p => err.config.url?.includes(p))
+    if (err.response?.status === 401 && localStorage.getItem('token') && !isSkip) {
       localStorage.removeItem('token')
       localStorage.removeItem('user')
       window.location.href = '/login'

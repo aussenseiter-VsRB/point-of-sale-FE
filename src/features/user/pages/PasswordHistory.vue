@@ -25,10 +25,14 @@ function formatDate(d) {
 
 <template>
   <div class="page">
-    <h1>Riwayat Perubahan Password</h1>
-    <p class="subtitle">Semua perubahan password yang pernah dilakukan</p>
+    <div class="page-header">
+      <div>
+        <h1>Riwayat Password</h1>
+        <p>{{ history.length }} perubahan</p>
+      </div>
+    </div>
 
-    <div v-if="loading" class="loading">Loading...</div>
+    <div v-if="loading" class="loading">Memuat...</div>
     <div v-else-if="error" class="info-card error-card">
       <i class="bi bi-exclamation-circle"></i> {{ error }}
     </div>
@@ -60,12 +64,21 @@ function formatDate(d) {
 </template>
 
 <style scoped>
-h1 {
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.page-header h1 {
   margin: 0;
 }
-.subtitle {
+.page-header p {
   color: #888;
-  margin: 4px 0 24px;
+  font-size: 14px;
+  margin: 0;
 }
 .loading, .empty {
   text-align: center;

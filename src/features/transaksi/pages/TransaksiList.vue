@@ -45,18 +45,18 @@ function formatDate(d) {
     <div class="page-header">
       <div>
         <h1>Transaksi</h1>
-        <p>{{ filtered.length }} transactions</p>
+        <p>{{ filtered.length }} transaksi</p>
       </div>
       <button class="btn-primary" @click="router.push('/transaksi/create')">
-        <i class="bi bi-cart-plus"></i> New Transaction
+        <i class="bi bi-cart-plus"></i> Transaksi Baru
       </button>
     </div>
     <div class="search-bar">
       <i class="bi bi-search search-icon"></i>
-      <input v-model="search" placeholder="Search by ID, kasir, or amount..." />
+      <input v-model="search" placeholder="Cari ID, kasir, atau nominal..." />
     </div>
-    <div v-if="loading" class="loading">Loading...</div>
-    <div v-else-if="filtered.length === 0" class="empty">No transactions found</div>
+    <div v-if="loading" class="loading">Memuat...</div>
+    <div v-else-if="filtered.length === 0" class="empty">Tidak ada transaksi</div>
     <div v-else class="table-wrapper">
       <table>
         <thead>

@@ -12,6 +12,7 @@ const form = ref({
   nama_produk: '',
   harga: '',
   stok: '',
+  discount_percent: 0,
 })
 
 onMounted(async () => {
@@ -22,6 +23,7 @@ onMounted(async () => {
         nama_produk: data.nama_produk,
         harga: data.harga,
         stok: data.stok,
+        discount_percent: Number(data.discount_percent) || 0,
       }
     } catch {
       error.value = 'Failed to load product'
@@ -36,6 +38,7 @@ async function handleSubmit() {
     const payload = {
       nama_produk: form.value.nama_produk,
       harga: Number(form.value.harga),
+      discount_percent: Number(form.value.discount_percent) || 0,
     }
     if (!isEdit) payload.stok = Number(form.value.stok)
     if (isEdit) {
@@ -64,6 +67,11 @@ async function handleSubmit() {
         <div class="form-group">
           <label>Harga (Rp)</label>
           <input v-model="form.harga" type="number" required placeholder="0" min="0" />
+        </div>
+        <div class="form-group">
+          <label>Diskon (%)</label>
+          <input v-model="form.discount_percent" type="number" placeholder="0" min="0" max="100" step="0.01" />
+          <small class="help-text">Persentase diskon yang otomatis diterapkan saat transaksi</small>
         </div>
         <div class="form-group" v-if="!isEdit">
           <label>Stok Awal</label>
@@ -115,6 +123,12 @@ h1 {
 .form-group input:focus {
   outline: none;
   border-color: #e94560;
+}
+.help-text {
+  display: block;
+  font-size: 12px;
+  color: #888;
+  margin-top: 4px;
 }
 .error {
   color: #e94560;

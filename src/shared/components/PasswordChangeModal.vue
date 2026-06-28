@@ -1,6 +1,9 @@
 <script setup>
 import { ref } from 'vue'
-import { changeOwnPassword, changeUserPassword } from '@/features/user/api'
+import { useAuthStore } from '@/shared/stores/auth'
+import { changeOwnUsername, changeOwnPassword, changeUserPassword } from '@/features/user/api'
+
+const auth = useAuthStore()
 
 const props = defineProps({
   targetUser: { type: Object, default: null },
@@ -8,6 +11,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'changed'])
 
+const username = ref(auth.username)
 const currentPassword = ref('')
 const newPassword = ref('')
 const confirmPassword = ref('')
@@ -37,14 +41,20 @@ async function handleSubmit() {
   try {
     if (isSelf) {
       await changeOwnPassword(currentPassword.value, newPassword.value)
+      if (username.value !== auth.username) {
+        await changeOwnUsername(username.value)
+        auth.user.username = username.value
+        localStorage.setItem('user', JSON.stringify(auth.user))
+      }
     } else {
       await changeUserPassword(props.targetUser.id, newPassword.value)
     }
     emit('changed')
   } catch (err) {
-    const msg = err.response?.data?.message || 'Gagal mengubah password'
+    const msg = err.response?.data?.message || 'Gagal mengubah data'
     if (msg === 'CURRENT_PASSWORD_INCORRECT') error.value = 'Password saat ini salah'
     else if (msg === 'PASSWORD_MIN_6_CHARACTERS') error.value = 'Password minimal 6 karakter'
+    else if (msg === 'USERNAME_ALREADY_EXISTS') error.value = 'Username sudah digunakan'
     else error.value = msg
   } finally {
     loading.value = false
@@ -60,6 +70,10 @@ async function handleSubmit() {
         <button class="btn-close" @click="emit('close')"><i class="bi bi-x-lg"></i></button>
       </div>
       <form @submit.prevent="handleSubmit">
+        <div v-if="isSelf" class="form-group">
+          <label>Username</label>
+          <input v-model="username" class="form-input" placeholder="Username" />
+        </div>
         <div v-if="isSelf" class="form-group">
           <label>Password Saat Ini</label>
           <div class="input-wrap">
@@ -148,6 +162,18 @@ async function handleSubmit() {
   font-weight: 600;
   font-size: 14px;
   color: #333;
+}
+.form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+.form-input:focus {
+  outline: none;
+  border-color: #e94560;
 }
 .input-wrap {
   position: relative;

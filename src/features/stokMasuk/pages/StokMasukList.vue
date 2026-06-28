@@ -29,14 +29,14 @@ function formatDate(d) {
     <div class="page-header">
       <div>
         <h1>Stok Masuk</h1>
-        <p>{{ stokList.length }} records</p>
+        <p>{{ stokList.length }} riwayat</p>
       </div>
       <button class="btn-primary" @click="router.push('/stok-masuk/create')">
-        <i class="bi bi-plus-lg"></i> Restock
+        <i class="bi bi-plus-lg"></i> Restok
       </button>
     </div>
-    <div v-if="loading" class="loading">Loading...</div>
-    <div v-else-if="stokList.length === 0" class="empty">No restock records</div>
+    <div v-if="loading" class="loading">Memuat...</div>
+    <div v-else-if="stokList.length === 0" class="empty">Belum ada restok</div>
     <div v-else class="table-wrapper">
       <table>
         <thead>
@@ -46,7 +46,7 @@ function formatDate(d) {
             <th>Harga Beli</th>
             <th>Supplier</th>
             <th>User</th>
-            <th>Date</th>
+            <th>Tanggal</th>
           </tr>
         </thead>
         <tbody>

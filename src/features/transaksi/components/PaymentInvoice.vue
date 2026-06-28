@@ -21,6 +21,14 @@ const isSufficient = computed(() => {
   const paid = Number(props.cashPaid) || 0
   return paid >= total && total > 0
 })
+const subtotalOrig = computed(() =>
+  (props.invoiceData?.items || []).reduce((s, i) => s + i.jumlah * Number(i.original_harga || i.harga), 0),
+)
+const subtotalDisc = computed(() =>
+  (props.invoiceData?.items || []).reduce((s, i) => s + i.jumlah * Number(i.harga), 0),
+)
+const productDiscount = computed(() => subtotalOrig.value - subtotalDisc.value)
+const couponDiscountVal = computed(() => Number(props.invoiceData?.discount_amount || 0) - productDiscount.value)
 
 onMounted(async () => {
   await nextTick()
@@ -104,9 +112,20 @@ function formatDate(d) {
           <tbody>
             <tr v-for="(item, idx) in invoiceData.items" :key="idx">
               <td class="center">{{ idx + 1 }}</td>
-              <td>{{ item.nama_produk || item.id_produk }}</td>
+              <td>
+                {{ item.nama_produk || item.id_produk }}
+                <span v-if="Number(item.original_harga) > Number(item.harga)" class="inv-item-discount">diskon</span>
+              </td>
               <td class="center">{{ item.jumlah }}</td>
-              <td class="right">Rp {{ Number(item.harga).toLocaleString('id-ID') }}</td>
+              <td class="right">
+                <template v-if="Number(item.original_harga) > Number(item.harga)">
+                  <span class="inv-orig-price">Rp {{ Number(item.original_harga).toLocaleString('id-ID') }}</span>
+                  Rp {{ Number(item.harga).toLocaleString('id-ID') }}
+                </template>
+                <template v-else>
+                  Rp {{ Number(item.harga).toLocaleString('id-ID') }}
+                </template>
+              </td>
               <td class="right">Rp {{ (item.jumlah * item.harga).toLocaleString('id-ID') }}</td>
             </tr>
           </tbody>
@@ -115,13 +134,17 @@ function formatDate(d) {
         <div class="invoice-summary">
           <div class="sline">
             <span>Subtotal</span>
-            <span>Rp {{ invoiceData.items.reduce((s, i) => s + i.jumlah * i.harga, 0).toLocaleString('id-ID') }}</span>
+            <span>Rp {{ subtotalOrig.toLocaleString('id-ID') }}</span>
           </div>
-          <div v-if="Number(invoiceData.discount_amount) > 0" class="sline sline-discount">
-            <span>Diskon</span>
-            <span>-Rp {{ Number(invoiceData.discount_amount).toLocaleString('id-ID') }}</span>
+          <div v-if="productDiscount > 0" class="sline sline-product-discount">
+            <span>Diskon Produk</span>
+            <span>-Rp {{ productDiscount.toLocaleString('id-ID') }}</span>
           </div>
-          <div v-if="invoiceData.discount_reason" class="sline sline-note">
+          <div v-if="couponDiscountVal > 0" class="sline sline-discount">
+            <span>Diskon Kupon</span>
+            <span>-Rp {{ couponDiscountVal.toLocaleString('id-ID') }}</span>
+          </div>
+          <div v-if="invoiceData.discount_reason && couponDiscountVal > 0" class="sline sline-note">
             <span>Keterangan</span>
             <span>{{ invoiceData.discount_reason }}</span>
           </div>
@@ -331,6 +354,13 @@ function formatDate(d) {
 .invoice-items .right {
   text-align: right;
 }
+.inv-item-discount {
+  font-size: 8px; background: #2e7d32; color: #fff; padding: 1px 5px;
+  border-radius: 6px; font-weight: 700; margin-left: 4px; vertical-align: middle;
+}
+.inv-orig-price {
+  text-decoration: line-through; color: #999; font-weight: 400; margin-right: 4px;
+}
 .invoice-summary {
   margin-bottom: 12px;
 }
@@ -342,6 +372,10 @@ function formatDate(d) {
 }
 .sline-discount {
   color: #f57f17;
+  font-weight: 600;
+}
+.sline-product-discount {
+  color: #2e7d32;
   font-weight: 600;
 }
 .sline-note {

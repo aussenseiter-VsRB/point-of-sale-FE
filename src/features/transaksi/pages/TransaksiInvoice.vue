@@ -14,7 +14,7 @@ onMounted(async () => {
     const { data } = await getTransaksiById(route.params.id)
     transaksi.value = data
   } catch {
-    loadingError.value = 'Failed to load invoice data'
+    loadingError.value = 'Gagal memuat data invoice'
   } finally {
     loading.value = false
   }
@@ -40,12 +40,12 @@ function printInvoice() {
 <template>
   <div class="page">
     <div class="no-print actions-bar">
-      <button class="btn-secondary" @click="router.push(`/transaksi/${route.params.id}`)">
-        <i class="bi bi-arrow-left"></i> Back
-      </button>
-      <button class="btn-primary" @click="printInvoice">
-        <i class="bi bi-printer"></i> Print
-      </button>
+        <button class="btn-secondary" @click="router.push(`/transaksi/${route.params.id}`)">
+          <i class="bi bi-arrow-left"></i> Kembali
+        </button>
+        <button class="btn-primary" @click="printInvoice">
+          <i class="bi bi-printer"></i> Cetak
+        </button>
     </div>
 
     <div v-if="loading" class="loading">Loading...</div>

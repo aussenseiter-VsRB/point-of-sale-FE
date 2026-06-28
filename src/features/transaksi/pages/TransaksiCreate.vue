@@ -27,8 +27,15 @@ const hasOpenShift = ref(true)
 const subtotal = computed(() =>
   cart.value.reduce((sum, item) => sum + item.harga * item.jumlah, 0),
 )
+const subtotalAfterDiscount = computed(() =>
+  cart.value.reduce((sum, item) => {
+    const discPct = Number(item.discount_percent) || 0
+    const chargedPrice = discPct > 0 ? item.harga * (1 - discPct / 100) : item.harga
+    return sum + chargedPrice * item.jumlah
+  }, 0),
+)
 const couponDiscount = computed(() => Number(appliedCoupon.value?.discount_amount || 0))
-const total = computed(() => Math.max(0, subtotal.value - couponDiscount.value))
+const total = computed(() => Math.max(0, subtotalAfterDiscount.value - couponDiscount.value))
 const change = computed(() => {
   const t = Number(invoiceData.value?.total_harga || 0)
   const p = Number(cashPaid.value) || 0
@@ -79,6 +86,7 @@ function addToCart(produk) {
       harga: Number(produk.harga),
       jumlah: 1,
       stok: Number(produk.stok),
+      discount_percent: Number(produk.discount_percent) || 0,
     })
   }
 }
@@ -98,7 +106,7 @@ async function handleApplyCoupon() {
   couponLoading.value = true
   try {
     const { data } = await validateCoupon(code)
-    if (Number(data.discount_amount) > subtotal.value) {
+    if (Number(data.discount_amount) > subtotalAfterDiscount.value) {
       couponError.value = 'Diskon melebihi subtotal'
       return
     }
@@ -125,6 +133,7 @@ async function handleCheckout() {
     const items = cart.value.map((c) => ({
       id_produk: c.id_produk,
       jumlah: c.jumlah,
+      discount_percent: Number(c.discount_percent) || 0,
     }))
     if (!selectedKasirId.value) {
       throw new Error('Pilih kasir terlebih dahulu')
@@ -160,7 +169,7 @@ function printInvoice() {
 <template>
   <div class="pos-page">
     <div class="pos-top-bar">
-      <h1>New Transaction</h1>
+      <h1>Transaksi Baru</h1>
       <div v-if="!auth.kasir" class="kasir-selector">
         <label><i class="bi bi-person-badge"></i> Kasir:</label>
         <select v-model="selectedKasirId" required>
@@ -189,6 +198,7 @@ function printInvoice() {
         <CartPanel
           :cart="cart"
           :subtotal="subtotal"
+          :subtotal-after-discount="subtotalAfterDiscount"
           :total="total"
           :coupon-discount="couponDiscount"
           :applied-coupon="appliedCoupon"

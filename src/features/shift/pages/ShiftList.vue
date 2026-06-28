@@ -33,19 +33,19 @@ async function handleOpenShift() {
     await openShift()
     await loadData()
   } catch (err) {
-    alert(err.response?.data?.message || 'Failed to open shift')
+    alert(err.response?.data?.message || 'Gagal membuka shift')
   } finally {
     openShiftLoading.value = false
   }
 }
 
 async function handleCloseShift(id) {
-  if (!confirm('Close this shift without reconciliation?')) return
+  if (!confirm('Tutup shift tanpa rekonsiliasi?')) return
   try {
     await closeShift(id)
     await loadData()
   } catch (err) {
-    alert(err.response?.data?.message || 'Failed to close shift')
+    alert(err.response?.data?.message || 'Gagal menutup shift')
   }
 }
 
@@ -73,37 +73,37 @@ const filtered = computed(() => {
   <div class="page">
     <div class="page-header">
       <div>
-        <h1>Shifts</h1>
-        <p>{{ filtered.length }} shifts</p>
+        <h1>Shift</h1>
+        <p>{{ filtered.length }} shift</p>
       </div>
       <button v-if="!auth.isAdmin" class="btn-primary" :disabled="openShiftLoading" @click="handleOpenShift">
         <i v-if="openShiftLoading" class="bi bi-arrow-repeat spin"></i>
         <i v-else class="bi bi-play-fill"></i>
-        {{ openShiftLoading ? ' Opening...' : ' Open Shift' }}
+        {{ openShiftLoading ? ' Membuka...' : ' Buka Shift' }}
       </button>
     </div>
 
     <div v-if="!auth.isAdmin" class="info-card">
       <i class="bi bi-info-circle"></i>
-      <span>To end a shift, use <strong>Reconciliation</strong> — it records the cash count and closes the shift automatically.</span>
+      <span>Untuk menutup shift, gunakan <strong>Rekonsiliasi</strong> — hitung uang kas dan tutup shift otomatis.</span>
     </div>
 
     <div class="search-bar">
       <i class="bi bi-search search-icon"></i>
-      <input v-model="search" placeholder="Search by kasir or status..." />
+      <input v-model="search" placeholder="Cari kasir atau status..." />
     </div>
 
-    <div v-if="loading" class="loading">Loading...</div>
-    <div v-else-if="filtered.length === 0" class="empty">No shifts found</div>
+    <div v-if="loading" class="loading">Memuat...</div>
+    <div v-else-if="filtered.length === 0" class="empty">Tidak ada shift</div>
     <div v-else class="table-wrapper">
       <table>
         <thead>
           <tr>
             <th>Kasir</th>
-            <th>Opened</th>
-            <th>Closed</th>
+            <th>Buka</th>
+            <th>Tutup</th>
             <th>Status</th>
-            <th>Actions</th>
+            <th>Aksi</th>
           </tr>
         </thead>
         <tbody>
@@ -119,10 +119,10 @@ const filtered = computed(() => {
             <td>
               <div class="action-group" v-if="s.status === 'open'">
                 <button class="btn-reconcile" @click="goToReconcile(s.id)">
-                  <i class="bi bi-cash-coin"></i> Reconcile & Close
+                  <i class="bi bi-cash-coin"></i> Rekonsiliasi & Tutup
                 </button>
                 <button class="btn-sm" @click="handleCloseShift(s.id)">
-                  <i class="bi bi-stop-fill"></i> Close
+                  <i class="bi bi-stop-fill"></i> Tutup
                 </button>
               </div>
             </td>

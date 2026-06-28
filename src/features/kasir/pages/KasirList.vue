@@ -39,14 +39,14 @@ async function handleDelete(id) {
     <div class="page-header">
       <div>
         <h1>Kasir</h1>
-        <p>{{ kasirList.length }} cashiers</p>
+        <p>{{ kasirList.length }} kasir</p>
       </div>
       <button v-if="auth.isAdmin" class="btn-primary" @click="router.push('/kasir/create')">
         <i class="bi bi-plus-lg"></i> Tambah Kasir
       </button>
     </div>
-    <div v-if="loading" class="loading">Loading...</div>
-    <div v-else-if="kasirList.length === 0" class="empty">No cashiers found</div>
+    <div v-if="loading" class="loading">Memuat...</div>
+    <div v-else-if="kasirList.length === 0" class="empty">Tidak ada kasir</div>
     <div v-else class="table-wrapper">
       <table>
         <thead>
@@ -54,7 +54,7 @@ async function handleDelete(id) {
             <th>ID</th>
             <th>Username</th>
             <th>Modal</th>
-            <th v-if="auth.isAdmin">Actions</th>
+            <th v-if="auth.isAdmin">Aksi</th>
           </tr>
         </thead>
         <tbody>
@@ -117,6 +117,18 @@ th {
 td {
   font-size: 14px;
 }
+.btn-primary {
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background: #e94560;
+  color: #fff;
+  transition: background 0.15s;
+}
+.btn-primary:hover { background: #d63851; }
 .btn-sm {
   padding: 6px 12px;
   border: 1px solid #e0e0e0;

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useAuthStore } from '@/shared/stores/auth'
 import { getKasir } from '@/features/kasir/api'
 import { getDailyReport, getDailyProfit, getWeeklyReport, getMonthlyReport } from '@/features/report/api'
@@ -26,6 +26,9 @@ onMounted(async () => {
   }
   loadCurrentPeriod()
 })
+
+watch(selectedKasir, () => loadCurrentPeriod())
+watch(date, () => loadCurrentPeriod())
 
 async function loadDailyItems() {
   loading.value = true
@@ -104,35 +107,23 @@ function formatRupiah(v) {
 
 <template>
   <div class="page">
-    <h1>Reports</h1>
-
-    <div class="filters">
-      <div class="form-group">
-        <label>Kasir</label>
-        <select v-model="selectedKasir">
+    <div class="page-header">
+      <h1>Laporan</h1>
+      <div class="filters">
+        <select v-model="selectedKasir" class="filter-select">
           <option value="">Semua Kasir</option>
           <option v-for="k in kasirList" :key="k.id" :value="k.id">{{ k.username || `Kasir #${k.id}` }}</option>
         </select>
-      </div>
-      <div class="form-group">
-        <label>Periode</label>
         <div class="period-tabs">
           <button :class="['period-tab', { active: period === 'daily' }]" @click="setPeriod('daily')">Harian</button>
           <button :class="['period-tab', { active: period === 'weekly' }]" @click="setPeriod('weekly')">Mingguan</button>
           <button :class="['period-tab', { active: period === 'monthly' }]" @click="setPeriod('monthly')">Bulanan</button>
         </div>
-      </div>
-      <div v-if="period === 'daily'" class="form-group">
-        <label>Tanggal</label>
-        <input v-model="date" type="date" />
-      </div>
-      <div class="form-group">
-        <label>&nbsp;</label>
-        <button class="btn-primary" @click="loadCurrentPeriod">Muat</button>
+        <input v-if="period === 'daily'" v-model="date" type="date" class="filter-date" />
       </div>
     </div>
 
-    <div v-if="loading" class="loading">Loading...</div>
+    <div v-if="loading" class="loading">Memuat...</div>
 
     <!-- DAILY -->
     <template v-if="period === 'daily' && !loading">
@@ -228,44 +219,30 @@ function formatRupiah(v) {
 </template>
 
 <style scoped>
-h1 {
-  margin: 0 0 20px;
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
 }
+.page-header h1 { margin: 0; }
 .filters {
   display: flex;
-  gap: 16px;
-  align-items: flex-end;
-  margin-bottom: 24px;
+  gap: 8px;
+  align-items: center;
   flex-wrap: wrap;
 }
-.form-group label {
-  display: block;
-  margin-bottom: 4px;
-  font-weight: 600;
-  font-size: 13px;
-  color: #666;
-}
-.form-group select, .form-group input {
+.filter-select, .filter-date {
   padding: 8px 12px;
   border: 2px solid #e0e0e0;
   border-radius: 8px;
   font-size: 14px;
 }
-.form-group select:focus, .form-group input:focus {
+.filter-select:focus, .filter-date:focus {
   outline: none;
   border-color: #e94560;
-}
-.btn-primary {
-  padding: 8px 20px;
-  background: #e94560;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-}
-.btn-primary:hover {
-  background: #d63851;
 }
 .period-tabs {
   display: flex;

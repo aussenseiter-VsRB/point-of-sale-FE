@@ -131,7 +131,7 @@ async function handleDelete(id) {
       </form>
     </div>
 
-    <div v-if="loading" class="loading">Loading...</div>
+    <div v-if="loading" class="loading">Memuat...</div>
     <div v-else class="table-wrapper">
       <table>
         <thead>

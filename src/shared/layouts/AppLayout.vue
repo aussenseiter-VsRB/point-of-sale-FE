@@ -22,7 +22,7 @@ const adminNav = [
   { name: 'Kupon', path: '/coupons', icon: 'bi-ticket-perforated' },
   { name: 'Shift', path: '/shift', icon: 'bi-clock-history' },
   { name: 'Reconciliation', path: '/reconciliation', icon: 'bi-cash-coin' },
-  { name: 'Diskon', path: '/transaksi/discounted', icon: 'bi-tag' },
+  { name: 'Diskon', path: '/diskon', icon: 'bi-tag' },
   { name: 'Void Log', path: '/void-log', icon: 'bi-journal-text' },
   { name: 'Reports', path: '/reports', icon: 'bi-bar-chart' },
   { name: 'Password History', path: '/password-history', icon: 'bi-key' },

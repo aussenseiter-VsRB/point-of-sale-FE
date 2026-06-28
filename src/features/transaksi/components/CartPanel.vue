@@ -2,6 +2,7 @@
 const props = defineProps({
   cart: { type: Array, required: true },
   subtotal: { type: Number, default: 0 },
+  subtotalAfterDiscount: { type: Number, default: 0 },
   total: { type: Number, default: 0 },
   couponDiscount: { type: Number, default: 0 },
   appliedCoupon: { type: Object, default: null },
@@ -53,9 +54,18 @@ function removeItem(index) {
         class="cart-item"
       >
         <div class="item-info">
-          <span class="item-name">{{ item.nama_produk }}</span>
+          <span class="item-name">
+            {{ item.nama_produk }}
+            <span v-if="Number(item.discount_percent) > 0" class="item-discount-badge">{{ item.discount_percent }}%</span>
+          </span>
           <span class="item-price">
-            Rp {{ (item.harga * item.jumlah).toLocaleString('id-ID') }}
+            <template v-if="Number(item.discount_percent) > 0">
+              <span class="item-orig-price">Rp {{ (item.harga * item.jumlah).toLocaleString('id-ID') }}</span>
+              Rp {{ Math.round(item.harga * (1 - Number(item.discount_percent) / 100) * item.jumlah).toLocaleString('id-ID') }}
+            </template>
+            <template v-else>
+              Rp {{ (item.harga * item.jumlah).toLocaleString('id-ID') }}
+            </template>
           </span>
         </div>
         <div class="item-qty">
@@ -106,6 +116,10 @@ function removeItem(index) {
       <div class="summary-row">
         <span>Subtotal</span>
         <span>Rp {{ subtotal.toLocaleString('id-ID') }}</span>
+      </div>
+      <div v-if="subtotal > subtotalAfterDiscount" class="summary-row product-discount">
+        <span>Diskon Produk</span>
+        <span>-Rp {{ (subtotal - subtotalAfterDiscount).toLocaleString('id-ID') }}</span>
       </div>
       <div v-if="couponDiscount > 0" class="summary-row discount">
         <span>Diskon Kupon</span>
@@ -183,8 +197,13 @@ function removeItem(index) {
   display: flex;
   flex-direction: column;
 }
-.item-name { font-weight: 600; font-size: 13px; }
+.item-name { font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+.item-discount-badge {
+  font-size: 10px; background: #2e7d32; color: #fff; padding: 1px 6px;
+  border-radius: 8px; font-weight: 700;
+}
 .item-price { color: #e94560; font-weight: 600; font-size: 14px; }
+.item-orig-price { text-decoration: line-through; color: #999; font-weight: 400; font-size: 12px; margin-right: 4px; }
 .item-qty {
   display: flex;
   align-items: center;
@@ -281,6 +300,7 @@ function removeItem(index) {
   padding-top: 6px;
 }
 .summary-row.discount { color: #155724; }
+.summary-row.product-discount { color: #2e7d32; }
 .checkout-btn {
   padding: 14px;
   background: #1a1a2e;

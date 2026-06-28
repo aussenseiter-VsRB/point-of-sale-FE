@@ -72,7 +72,7 @@ function closeModal() {
     <div class="page-header">
       <div>
         <h1>Produk</h1>
-        <p>{{ produkList.length }} products</p>
+        <p>{{ produkList.length }} produk</p>
       </div>
       <button v-if="auth.isAdmin" class="btn-primary" @click="router.push('/produk/create')">
         <i class="bi bi-plus-lg"></i> Tambah Produk
@@ -80,10 +80,10 @@ function closeModal() {
     </div>
     <div class="search-bar">
       <i class="bi bi-search search-icon"></i>
-      <input v-model="search" placeholder="Search by name or barcode..." />
+      <input v-model="search" placeholder="Cari nama atau barcode..." />
     </div>
-    <div v-if="loading" class="loading">Loading...</div>
-    <div v-else-if="filtered.length === 0" class="empty">No products found</div>
+    <div v-if="loading" class="loading">Memuat...</div>
+    <div v-else-if="filtered.length === 0" class="empty">Tidak ada produk</div>
     <div v-else class="table-wrapper">
       <table>
         <thead>
@@ -91,6 +91,7 @@ function closeModal() {
             <th>Barcode</th>
             <th>Nama Produk</th>
             <th>Harga</th>
+            <th>Diskon</th>
             <th>Stok</th>
             <th v-if="auth.isAdmin">Actions</th>
           </tr>
@@ -100,6 +101,10 @@ function closeModal() {
             <td><code>{{ p.barcode }}</code></td>
             <td>{{ p.nama_produk }}</td>
             <td>Rp {{ Number(p.harga).toLocaleString('id-ID') }}</td>
+            <td>
+              <span v-if="Number(p.discount_percent) > 0" class="badge badge-discount">{{ p.discount_percent }}%</span>
+              <span v-else>-</span>
+            </td>
             <td>
               <span :class="['badge', Number(p.stok) <= 0 ? 'badge-danger' : Number(p.stok) < 10 ? 'badge-warning' : 'badge-success']">
                 {{ p.stok }}
@@ -122,7 +127,7 @@ function closeModal() {
           <h3>Stok History: {{ stokModal.nama_produk }}</h3>
           <button class="modal-close" @click="closeModal"><i class="bi bi-x-lg"></i></button>
         </div>
-        <div v-if="stokLoading" class="loading">Loading...</div>
+        <div v-if="stokLoading" class="loading">Memuat...</div>
         <div v-else-if="stokHistory.length === 0" class="empty">Belum ada riwayat stok masuk</div>
         <table v-else>
           <thead>
@@ -239,6 +244,11 @@ code {
 .badge-danger {
   background: #ffebee;
   color: #c62828;
+}
+.badge-discount {
+  background: #e8f5e9;
+  color: #2e7d32;
+  font-weight: 700;
 }
 .btn-sm {
   padding: 6px 10px;

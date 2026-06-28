@@ -60,15 +60,15 @@ function openChangePassword(user) {
     <div class="page-header">
       <div>
         <h1>Users</h1>
-        <p>{{ userList.length }} users</p>
+        <p>{{ userList.length }} user</p>
       </div>
       <button class="btn-primary" @click="showRegister = !showRegister">
-        <i class="bi bi-person-plus"></i> Register User
+        <i class="bi bi-person-plus"></i> Daftar User
       </button>
     </div>
 
     <div v-if="showRegister" class="form-card">
-      <h3>Register New User</h3>
+      <h3>Daftar User Baru</h3>
       <form @submit.prevent="handleRegister">
         <div class="form-group">
           <label>Username</label>
@@ -91,18 +91,18 @@ function openChangePassword(user) {
           </select>
         </div>
         <p v-if="regError" class="error">{{ regError }}</p>
-        <button type="submit" class="btn-primary">Register</button>
+        <button type="submit" class="btn-primary">Daftar</button>
       </form>
     </div>
 
-    <div v-if="loading" class="loading">Loading...</div>
+    <div v-if="loading" class="loading">Memuat...</div>
     <div v-else class="table-wrapper">
       <table>
         <thead>
           <tr>
             <th>Username</th>
             <th>Role</th>
-            <th>Actions</th>
+            <th>Aksi</th>
           </tr>
         </thead>
         <tbody>
@@ -244,6 +244,18 @@ td {
   background: #f3e5f5;
   color: #7b1fa2;
 }
+.btn-primary {
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background: #e94560;
+  color: #fff;
+  transition: background 0.15s;
+}
+.btn-primary:hover { background: #d63851; }
 .btn-sm {
   padding: 6px 12px;
   border: 1px solid #e0e0e0;

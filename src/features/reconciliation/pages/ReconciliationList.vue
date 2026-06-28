@@ -43,29 +43,29 @@ function formatDate(d) {
   <div class="page">
     <div class="page-header">
       <div>
-        <h1>Cash Reconciliation</h1>
-        <p>{{ reconciliations.length }} records</p>
+        <h1>Rekonsiliasi Kas</h1>
+        <p>{{ reconciliations.length }} rekonsiliasi</p>
       </div>
       <button class="btn-primary" @click="router.push('/reconciliation/create')">
-        <i class="bi bi-plus-lg"></i> New Reconciliation
+        <i class="bi bi-plus-lg"></i> Rekonsiliasi Baru
       </button>
     </div>
-    <div v-if="loading" class="loading">Loading...</div>
+    <div v-if="loading" class="loading">Memuat...</div>
     <div v-else-if="error" class="info-card error-card">
       <i class="bi bi-exclamation-circle"></i>
       <span>{{ error }}</span>
     </div>
-    <div v-else-if="reconciliations.length === 0" class="empty">No reconciliations yet</div>
+    <div v-else-if="reconciliations.length === 0" class="empty">Belum ada rekonsiliasi</div>
     <div v-else class="table-wrapper">
       <table>
         <thead>
           <tr>
             <th>Shift</th>
             <th>Kasir</th>
-            <th>Expected</th>
-            <th>Actual</th>
-            <th>Discrepancy</th>
-            <th>Note</th>
+            <th>Diharapkan</th>
+            <th>Aktual</th>
+            <th>Selisih</th>
+            <th>Catatan</th>
           </tr>
         </thead>
         <tbody>
@@ -74,7 +74,7 @@ function formatDate(d) {
             <td>{{ r.kasir_username || 'N/A' }}</td>
             <td>Rp {{ Number(r.expected_cash).toLocaleString('id-ID') }}</td>
             <td>Rp {{ Number(r.actual_cash).toLocaleString('id-ID') }}</td>
-            <td :class="Number(r.discrepancy) !== 0 ? 'discount' : ''">
+            <td :class="{ 'discount-pos': Number(r.discrepancy) > 0, 'discount-neg': Number(r.discrepancy) < 0 }">
               Rp {{ Number(r.discrepancy).toLocaleString('id-ID') }}
             </td>
             <td>{{ r.note || '-' }}</td>
@@ -148,7 +148,11 @@ code {
   border-radius: 4px;
   font-size: 12px;
 }
-.discount {
+.discount-pos {
+  color: #2e7d32;
+  font-weight: 600;
+}
+.discount-neg {
   color: #c62828;
   font-weight: 600;
 }

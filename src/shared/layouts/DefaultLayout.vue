@@ -20,7 +20,7 @@ const navItems = [
 
 const adminNavItems = [
   { name: 'Users', path: '/users', icon: 'bi-people' },
-  { name: 'Diskon', path: '/transaksi/discounted', icon: 'bi-tag' },
+  { name: 'Diskon', path: '/diskon', icon: 'bi-tag' },
   { name: 'Void Log', path: '/void-log', icon: 'bi-journal-text' },
   { name: 'Reports', path: '/reports', icon: 'bi-bar-chart' },
 ]

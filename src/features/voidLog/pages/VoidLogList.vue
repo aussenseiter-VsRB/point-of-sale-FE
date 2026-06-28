@@ -41,22 +41,26 @@ function formatDate(d) {
 
 <template>
   <div class="page">
-    <h1>Void Log</h1>
-    <p class="subtitle">Audit trail for voided transactions</p>
+    <div class="page-header">
+      <div>
+        <h1>Void Log</h1>
+        <p>{{ filtered.length }} log</p>
+      </div>
+    </div>
     <div class="search-bar">
       <i class="bi bi-search search-icon"></i>
-      <input v-model="search" placeholder="Search by transaction, user, or reason..." />
+      <input v-model="search" placeholder="Cari berdasarkan transaksi, user, atau alasan..." />
     </div>
-    <div v-if="loading" class="loading">Loading...</div>
-    <div v-else-if="filtered.length === 0" class="empty">No void logs found</div>
+    <div v-if="loading" class="loading">Memuat...</div>
+    <div v-else-if="filtered.length === 0" class="empty">Tidak ada void log</div>
     <div v-else class="table-wrapper">
       <table>
         <thead>
           <tr>
             <th>Transaksi</th>
-            <th>Voided By</th>
-            <th>Reason</th>
-            <th>Voided At</th>
+            <th>Dihapus Oleh</th>
+            <th>Alasan</th>
+            <th>Waktu</th>
           </tr>
         </thead>
         <tbody>
@@ -73,8 +77,16 @@ function formatDate(d) {
 </template>
 
 <style scoped>
-h1 { margin: 0; }
-.subtitle { color: #888; margin-bottom: 20px; }
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.page-header h1 { margin: 0; }
+.page-header p { color: #888; font-size: 14px; margin: 0; }
 .search-bar { position: relative; margin-bottom: 16px; }
 .search-bar .search-icon {
   position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
